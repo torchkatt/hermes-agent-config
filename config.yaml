@@ -1,0 +1,40 @@
+model:
+  provider: deepseek
+  default: deepseek-v4-flash
+  base_url: https://api.deepseek.com/v1
+
+fallback_providers:
+  - provider: openrouter
+    model: anthropic/claude-opus-4-8
+
+agent:
+  max_turns: 90
+  tool_use_enforcement: auto
+  task_completion_guidance: true
+  parallel_tool_call_guidance: true
+  environment_probe: true
+  coding_context: auto
+  verify_on_stop: auto
+
+toolsets:
+  - web
+  - browser
+  - terminal
+  - file
+  - code_execution
+  - vision
+  - memory
+  - session_search
+  - delegation
+  - cronjob
+  - clarify
+  - todo
+  - skills
+
+display:
+  language: es
+  interface: cli
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true

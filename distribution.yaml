@@ -1,0 +1,14 @@
+name: torchkatt-agent
+version: 1.0.0
+description: "TorchKatt's personal Hermes Agent — DeepSeek V4 with FemControl context and codebase-search toolkit"
+author: Alexander Sandoval
+
+env:
+  - DEEPSEEK_API_KEY
+  - OPENROUTER_API_KEY
+
+# Files included in this distribution
+config: config.yaml
+soul: SOUL.md
+skills_dir: skills/
+cron_dir: cron/
