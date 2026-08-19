@@ -16,7 +16,7 @@ if [ -f "$CFG" ] && [ ! -f "$CFG.bak-tokenopt" ]; then
 fi
 
 echo ""
-echo "═══ 1/5 · Compresión de contexto ═══"
+echo "═══ 1/6 · Compresión de contexto ═══"
 # CLAVE: deepseek-v4-flash tiene ventana de 1M tokens; sin override,
 # la compresión relativa (threshold x 1M) casi nunca dispara.
 hermes config set model.context_length 262144 2>&1 || echo "⚠️  hermes no responde — ¿está en PATH?"
@@ -28,17 +28,17 @@ echo "  → context_length = $(hermes config get model.context_length 2>/dev/nul
 echo "  → threshold = $(hermes config get compression.threshold 2>/dev/null)"
 
 echo ""
-echo "═══ 2/5 · Cron jobs (¿quedó alguno agent-driven activo?) ═══"
+echo "═══ 2/6 · Cron jobs (¿quedó alguno agent-driven activo?) ═══"
 hermes cron list 2>/dev/null | grep -iE "enabled|scheduled|paused" | head -40 || hermes cron list
 echo "  → agent-driven sin no_agent = consume tokens en cada ejecución."
 echo "    Pausar:  hermes cron pause <ID>   |  Convertir: no_agent=true"
 
 echo ""
-echo "═══ 3/5 · Gateway (¿corriendo? consume tokens por mensaje) ═══"
+echo "═══ 3/6 · Gateway (¿corriendo? consume tokens por mensaje) ═══"
 hermes gateway status 2>&1 | head -6 || echo "  → gateway no instalado/corriendo (bien si no lo usas)"
 
 echo ""
-echo "═══ 4/5 · Skills: archivar los de 0 usos (reversible) ═══"
+echo "═══ 4/6 · Skills: archivar los de 0 usos (reversible) ═══"
 echo "  ⚠️  En Windows NO deshabilitar los skills Windows-only (allá SÍ se usan)."
 echo "  Para archivar los nunca usados:"
 echo "      hermes curator run                # sweep determinista (gratis)"
@@ -47,7 +47,25 @@ echo "      hermes curator restore <nombre>   # revertir"
 echo "  Los cambios en skills aplican en la PRÓXIMA sesión."
 
 echo ""
-echo "═══ 5/5 · Torch: tope de gasto diario DeepSeek ═══"
+echo "═══ 5/6 · Prompt cache mes-only (timestamp byte-stable por mes) ═══"
+# El system prompt inyecta 'Conversation started: <fecha>'. Con día, el
+# cache se invalida a medianoche en sesiones abiertas. Con mes (August 2026)
+# el prompt es byte-stable todo el mes (decisión usuario 19-ago-2026).
+SP="$LOCALAPPDATA/hermestorch/hermes-agent/agent/system_prompt.py"
+if [ -f "$SP" ]; then
+  if grep -q "%B %Y" "$SP"; then
+    echo "  → ya aplicado (mes-only)"
+  else
+    cp "$SP" "$SP.bak-tokenopt"
+    sed -i 's/%A, %B %d, %Y/%B %Y/' "$SP"
+    echo "  → aplicado: Conversation started: August 2026 (byte-stable por mes)"
+  fi
+else
+  echo "  ⚠️  system_prompt.py no encontrado en $SP — ruta distinta (buscar con: where hermes)"
+fi
+
+echo ""
+echo "═══ 6/6 · Torch: tope de gasto diario DeepSeek ═══"
 echo "  Torch lee la MISMA DEEPSEEK_API_KEY y tiene tope default de 5.0 USD/día."
 echo "  Si no lo usas a diario, bájalo:"
 echo "      cd /c/Users/ALEXANDER\ SANDOVAL/Documents/PERSONAL/DESARROLLO/Torch"
