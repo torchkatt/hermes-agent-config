@@ -3,6 +3,7 @@ model:
   provider: deepseek
   default: deepseek-v4-flash
   base_url: https://api.deepseek.com/v1
+  context_length: 262144
 
 fallback_providers:
   - provider: openrouter
@@ -21,8 +22,9 @@ agent:
 # para que cada turno reenvíe menos tokens. 2026-08-19.
 compression:
   enabled: true
-  threshold: 0.35
+  threshold: 0.25
   target_ratio: 0.2
+  protect_last_n: 12
 
 # Caché de prompts activa (DeepSeek cachea automáticamente server-side;
 # los cache hits cuestan 50x menos que los misses).
