@@ -1,3 +1,4 @@
+# ── Configuración de TorchKatt Hermes (Windows) ──────────────
 model:
   provider: deepseek
   default: deepseek-v4-flash
@@ -15,6 +16,18 @@ agent:
   environment_probe: true
   coding_context: auto
   verify_on_stop: auto
+
+# Ahorro de tokens: compacta el contexto antes (0.5 → 0.35)
+# para que cada turno reenvíe menos tokens. 2026-08-19.
+compression:
+  enabled: true
+  threshold: 0.35
+  target_ratio: 0.2
+
+# Caché de prompts activa (DeepSeek cachea automáticamente server-side;
+# los cache hits cuestan 50x menos que los misses).
+prompt_caching:
+  cache_ttl: 5m
 
 toolsets:
   - web
