@@ -95,3 +95,15 @@ hermes config get compression.threshold  # → 0.25
   (invalida el caché → todo el historial se reenvía a precio de miss, 50× más).
 - Torch (Windows) lee la MISMA `DEEPSEEK_API_KEY` — su gasto aparece en el
   mismo dashboard de DeepSeek sin desglose por app.
+
+## Timestamp mes-only (19-ago-2026)
+
+El system prompt termina con `Conversation started: <fecha>`. Con día exacto,
+el caché se invalidaba a medianoche en toda sesión abierta (1 miss de todo el
+contexto, 50× más caro). Ahora es **mes-only**: `Conversation started: August
+2026` → prompt byte-stable TODO el mes, y las compresiones tampoco invalidan.
+
+- Aplicado en Mac: `agent/system_prompt.py` (línea ~780). ⚠️ **Se pierde con
+  `hermes update`** → reaplicar el sed (también en `optimizar_windows.sh` §5/6).
+- El modelo puede consultar la hora exacta con tools (`date`) cuando lo necesites.
+- Backup: `agent/system_prompt.py.bak-20260819`.
